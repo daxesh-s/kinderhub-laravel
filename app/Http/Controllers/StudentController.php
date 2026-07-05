@@ -3,17 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Student;
+use App\Services\StudentService;
 use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
+    private StudentService $studentService;
+    public function __construct(StudentService $studentService)
+    {
+        $this->studentService = $studentService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $students = Student::select(["id","first_name","last_name","email","created_at","updated_at"])->where("is_active",true)->orderBy("id","desc")->paginate(10);
-        return view('students.index', compact('students'));
+        $students = $this->studentService->list();
+        return view('students.index', compact("students"));
     }
 
     /**
@@ -35,9 +41,9 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Student $student)
     {
-        //
+        return $student;
     }
 
     /**
