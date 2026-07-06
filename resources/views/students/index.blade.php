@@ -48,13 +48,14 @@
                         S</div>
                     <h1 class="text-2xl font-semibold text-gray-900">Student Manager</h1>
                 </div>
-                <button
+                <a href="students/create"
                     class="flex items-center gap-x-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-2xl font-medium text-sm transition-colors">
                     <i class="fas fa-plus"></i>
                     <span>Add Student</span>
-                </button>
+                </a>
             </div>
         </nav>
+        {{-- {{ dd($students['links']) }} --}}
         {{-- {{ dd($students) }} --}}
 
         <div class="max-w-7xl mx-auto px-6 py-8">
@@ -63,7 +64,7 @@
                 <div>
                     <h2 class="text-3xl font-semibold text-gray-900">Students</h2>
                     <p class="text-gray-500 mt-1">Total Students: <span class="font-semibold text-gray-700">
-                            {{ $students->total() }}
+                            {{ $students['total'] }}
                         </span>
                     </p>
                 </div>
@@ -131,37 +132,38 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
-                            @foreach ($students as $student)
+                            @foreach ($students['data'] as $student)
                                 <tr class="table-row">
-                                    <td class="px-6 py-6 text-sm text-gray-400 font-medium">{{ $student->id }}</td>
+                                    <td class="px-6 py-6 text-sm text-gray-400 font-medium">{{ $student['id'] }}</td>
                                     <td class="px-6 py-6">
                                         <div class="flex items-center gap-x-3">
-                                            @if (empty($student->profile_picture))
+                                            @if (empty($student['profile_picture']))
                                                 <div
                                                     class="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-medium">
-                                                    {{ substr($student->first_name, 0, 1) }}{{ substr($student->last_name, 0, 1) }}
+                                                    {{ substr($student['first_name'], 0, 1) }}{{ substr($student['last_name'], 0, 1) }}
                                                 </div>
                                             @else
                                                 <div
                                                     class="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center font-medium">
-                                                    <img src={{ $student->profile_picture }} />
+                                                    <img src={{ $student['profile_picture'] }} />
                                                 </div>
                                             @endif
 
                                             <div class="font-semibold text-gray-900">
-                                                {{ $student->first_name . ' ' . $student->last_name }}</div>
+                                                {{ $student['first_name'] . ' ' . $student['last_name'] }}</div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-6 text-sm">
-                                        {{ $student->email }}<br>
-                                        <span class="text-gray-500">{{ $student->phone }}</span>
+                                        {{ $student['email'] }}<br>
+                                        <span class="text-gray-500">{{ $student['phone'] }}</span>
                                     </td>
                                     <td class="px-6 py-6 text-sm">
-                                        {{ $student->city }}, {{ $student->state }}<br>
-                                        <span class="text-gray-400">{{ $student->country }}</span>
+                                        {{ $student['city'] }}, {{ $student['state'] }}<br>
+                                        <span class="text-gray-400">{{ $student['country'] }}</span>
                                     </td>
                                     <td class="px-6 py-6 text-sm text-gray-500">
-                                        {{ $student->created_at->format('d M Y') }}</td>
+                                        {{ date('d M Y', strtotime($student['created_at'])) }}
+                                    </td>
                                     <td class="px-6 py-6">
                                         <div class="flex items-center justify-center gap-x-3">
                                             <button onclick="viewStudent(1)"
@@ -188,21 +190,33 @@
                 <!-- Pagination -->
                 <div class="px-6 py-5 bg-gray-50 border-t flex items-center justify-between">
                     <div class="text-sm text-gray-500">
-                        Showing 1 to 10 of 248 students
+                        Showing {{ $students['from'] }} to {{ $students['to'] }} of
+                        {{ $students['total'] }} students
                     </div>
                     <div class="flex items-center gap-x-1">
-                        <button class="px-4 py-2 text-sm text-gray-400 hover:text-gray-600 flex items-center gap-x-1">
+                        <a href="{{ $students['links'][0]['url'] }}"
+                            class="px-4 py-2 text-sm text-gray-400 hover:text-gray-600 flex items-center gap-x-1">
                             <i class="fas fa-chevron-left"></i> Prev
-                        </button>
-                        <button
-                            class="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-2xl text-sm font-medium">1</button>
-                        <button
-                            class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-2xl text-sm font-medium text-gray-600">2</button>
-                        <button
-                            class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded-2xl text-sm font-medium text-gray-600">3</button>
-                        <button class="px-4 py-2 text-sm text-gray-400 hover:text-gray-600 flex items-center gap-x-1">
+                        </a>
+                        @foreach ($students['links'] as $index => $link)
+                            @if ($index === 0 || $index === count($students['links']) - 1)
+                                @continue
+                            @endif
+                            <button onclick="return window.location='{{ $link['url'] }}'"
+                                @if ($link['active']) disabled @endif
+                                class="w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-all duration-200
+    {{ $link['active']
+        ? 'bg-blue-600 text-white shadow-md cursor-default'
+        : 'bg-white text-gray-700 border border-gray-300 hover:bg-blue-50 hover:border-blue-500 hover:text-blue-600 cursor-pointer' }}">
+
+                                {{ $link['label'] }}</button>
+                        @endforeach
+
+
+                        <a href="{{ $students['links'][count($students['links']) - 1]['url'] }}"
+                            class="px-4 py-2 text-sm text-gray-400 hover:text-gray-600 flex items-center gap-x-1">
                             Next <i class="fas fa-chevron-right"></i>
-                        </button>
+                        </a>
                     </div>
                 </div>
             </div>

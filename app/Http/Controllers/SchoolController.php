@@ -2,24 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
-use App\Services\StudentService;
+use App\Services\SchoolService;
 use Illuminate\Http\Request;
 
-class StudentController extends Controller
+class SchoolController extends Controller
 {
-    private StudentService $studentService;
-    public function __construct(StudentService $studentService)
+    private SchoolService $school_service;
+    public function __construct(SchoolService $school_service)
     {
-        $this->studentService = $studentService;
+        $this->school_service = $school_service;
     }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $students = $this->studentService->list();
-        return view('students.index', ["students" => $students]);
+        //
     }
 
     /**
@@ -27,7 +25,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        return view('students.create');
+        //
     }
 
     /**
@@ -41,9 +39,9 @@ class StudentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Student $student)
+    public function show(string $id)
     {
-        return $student;
+        //
     }
 
     /**
@@ -68,5 +66,12 @@ class StudentController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function lists()
+    {
+        $schools = $this->school_service->get_school_lists();
+        // dd($schools);
+        // logger($schools);
+        return response()->json($schools);
     }
 }

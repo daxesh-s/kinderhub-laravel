@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\ClassRoom;
+use App\Models\School;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,8 +20,8 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'school_id'=>4,
-            'class_id'=>1,
+            'school_id' => School::factory(),
+            'class_id' => ClassRoom::factory(),
             'admission_number' => fake()->unique()->bothify('ADM####'),
 
             'roll_number' => fake()->unique()->numberBetween(61, 5000),
@@ -46,7 +48,7 @@ class StudentFactory extends Factory
 
             'state' => fake()->state(),
 
-            'country' => fake()->country(),
+            'country' => fake()->countryCode(),
 
             'postal_code' => fake()->postcode(),
 

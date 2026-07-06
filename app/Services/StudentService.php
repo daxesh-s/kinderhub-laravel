@@ -3,13 +3,12 @@
 namespace App\Services;
 
 use App\Models\Student;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class StudentService
 {
-    public function list(): LengthAwarePaginator
+    public function list(): array
     {
-        return Student::select(["id", "first_name", "last_name", "email", "phone", "city", "state", "country", "created_at", "updated_at"])->where("is_active", true)->where("deleted_at", null)->orderBy("id", "desc")->paginate(10);
+        return Student::select(["id", "first_name", "last_name", "email", "phone", "city", "state", "country", "profile_picture", "created_at", "updated_at"])->where("is_active", true)->where("deleted_at", null)->orderBy("id", "desc")->paginate(10)->toArray();
     }
     public function create(array $data): Student
     {
